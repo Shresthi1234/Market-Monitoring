@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><title>Farmer Dashboard</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
+<body class="dashboard">
+<header><div class="logo">🌾 AgriPrice</div><div>Farmer: {{ session.username }} <a href="/logout">Logout</a></div></header>
+<section class="dashboard-head"><p class="tag">FARMER DASHBOARD</p><h1>Compare your price with local markets</h1><p>Select a crop and locality, enter your current selling price, and compare it with every market there.</p></section>
+<div class="panel">
+<form action="/farmer/compare" method="POST" class="form-grid">
+  <label>Crop<select name="crop" required>{% for c in crops %}<option {% if c==crop %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+  <label>Location<select name="location" required>{% for l in locations %}<option {% if l==location %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  <label>Your Price (₹/kg)<input name="farmer_price" type="number" step="0.01" min="0" value="{{ farmer_price or '' }}" required></label>
+  <button class="primary" type="submit">Compare Prices</button>
+</form>
+</div>
+{% if markets is defined %}
+<div class="stats">
+ <div><small>Your Price</small><strong>₹{{ "%.2f"|format(farmer_price) }}</strong></div>
+ <div><small>Highest Market</small><strong>₹{{ "%.2f"|format(highest) }}</strong></div>
+ <div><small>Lowest Market</small><strong>₹{{ "%.2f"|format(lowest) }}</strong></div>
+</div>
+<div class="panel"><h2>{{ crop }} prices in {{ location }}</h2><div class="table-wrap"><table><tr><th>Market</th><th>Price/kg</th><th>Compared with You</th></tr>
+{% for m in markets %}<tr><td>{{ m.market_name }}</td><td>₹{{ "%.2f"|format(m.price) }}</td><td>{% if m.price > farmer_price %}<span class="high">Higher</span>{% elif m.price < farmer_price %}<span class="low">Lower</span>{% else %}<span>Same</span>{% endif %}</td></tr>{% endfor %}
+</table></div><canvas id="priceChart"></canvas></div>
+<script>
+const labels={{ markets|map(attribute='market_name')|list|tojson }};
+const values={{ markets|map(attribute='price')|list|tojson }};
+new Chart(document.getElementById('priceChart'),{type:'bar',data:{labels:labels,datasets:[{label:'Market price (₹/kg)',data:values}]},options:{responsive:true}});
+</script>
+{% endif %}
+</body></html>

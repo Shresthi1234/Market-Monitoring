@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriPrice | Farmer Market Price System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="hero">
+<div class="overlay"></div>
+<nav><div class="logo">🌾 AgriPrice</div></nav>
+<main class="home-card">
+    <p class="tag">SMART AGRICULTURE</p>
+    <h1>Know the Price.<br><span>Choose the Better Market.</span></h1>
+    <p class="subtitle">Compare your crop price with markets in your locality and make better selling decisions.</p>
+    <div class="login-grid">
+        <button class="role-card" onclick="openLogin('farmer')">
+            <div class="icon">👨‍🌾</div><h2>Farmer Login</h2>
+            <p>Check and compare market prices</p>
+        </button>
+        <button class="role-card" onclick="openLogin('admin')">
+            <div class="icon">🧑‍💼</div><h2>Admin Login</h2>
+            <p>Manage and update market prices</p>
+        </button>
+    </div>
+</main>
+<div id="loginModal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeLogin()">×</button>
+    <h2 id="loginTitle">Login</h2>
+    <p>Enter your username and password</p>
+    <form id="loginForm" method="POST">
+      <input name="username" placeholder="Username" required>
+      <input name="password" type="password" placeholder="Password" required>
+      <button class="primary" type="submit">Login</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}<div class="error">{{ message }}</div>{% endfor %}
+    {% endwith %}
+  </div>
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

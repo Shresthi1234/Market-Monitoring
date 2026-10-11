@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body class="dashboard">
+<header><div class="logo">🌾 AgriPrice</div><div>Admin: {{ session.username }} <a href="/logout">Logout</a></div></header>
+<section class="dashboard-head"><p class="tag">ADMIN DASHBOARD</p><h1>Manage market prices</h1><p>Select a crop and location to view all markets and update their prices.</p></section>
+<div class="panel">
+<form action="/admin/prices" method="POST" class="form-grid">
+<label>Crop<select name="crop" required>{% for c in crops %}<option {% if c==crop %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+<label>Location<select name="location" required>{% for l in locations %}<option {% if l==location %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+<button class="primary" type="submit">View Markets</button>
+</form>
+</div>
+{% if markets is defined %}
+<div class="panel"><h2>{{ crop }} — {{ location }}</h2><div class="table-wrap"><table><tr><th>Market</th><th>Current Price/kg</th><th>Update Price</th></tr>
+{% for m in markets %}<tr><td>{{ m.market_name }}</td><td>₹{{ "%.2f"|format(m.price) }}</td><td><form action="/admin/update" method="POST" class="update-form"><input type="hidden" name="price_id" value="{{ m.id }}"><input name="price" type="number" step="0.01" min="0" value="{{ m.price }}" required><button class="small-btn">Update</button></form></td></tr>{% endfor %}
+</table></div></div>
+{% endif %}
+</body></html>
